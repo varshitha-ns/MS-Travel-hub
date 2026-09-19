@@ -29,12 +29,15 @@ export const getCars = async (req, res) => {
       seatingCapacity,
       minPrice,
       maxPrice,
-      isAvailable
+      isAvailable,
+      page = 1,
+      limit = 10,
+      sort = "newest"
     } = req.query;
 
     const filter = {};
 
-    // Location filter
+    // Location
     if (location) {
       filter.location = {
         $regex: location,
@@ -42,27 +45,27 @@ export const getCars = async (req, res) => {
       };
     }
 
-    // Category filter
+    // Category
     if (category) {
       filter.category = category;
     }
 
-    // Transmission filter
+    // Transmission
     if (transmission) {
       filter.transmission = transmission;
     }
 
-    // Fuel type filter
+    // Fuel type
     if (fuelType) {
       filter.fuelType = fuelType;
     }
 
-    // Seating capacity filter
+    // Seating capacity
     if (seatingCapacity) {
       filter.seatingCapacity = Number(seatingCapacity);
     }
 
-    // Price range filter
+    // Price range
     if (minPrice || maxPrice) {
       filter.pricePerDay = {};
 
@@ -75,16 +78,60 @@ export const getCars = async (req, res) => {
       }
     }
 
-    // Availability filter
+    // Availability
     if (isAvailable !== undefined) {
       filter.isAvailable = isAvailable === "true";
     }
 
-    const cars = await Car.find(filter);
+    // Pagination
+    const currentPage = Math.max(Number(page), 1);
+    const itemsPerPage = Math.max(Number(limit), 1);
+    const skip = (currentPage - 1) * itemsPerPage;
+
+    // Sorting
+    let sortOption = { createdAt: -1 };
+
+    switch (sort) {
+      case "price_asc":
+        sortOption = { pricePerDay: 1 };
+        break;
+
+      case "price_desc":
+        sortOption = { pricePerDay: -1 };
+        break;
+
+      case "seats":
+        sortOption = { seatingCapacity: -1 };
+        break;
+
+      case "name":
+        sortOption = { name: 1 };
+        break;
+
+      case "newest":
+      default:
+        sortOption = { createdAt: -1 };
+        break;
+    }
+
+    // Get total number of matching cars
+    const totalCars = await Car.countDocuments(filter);
+
+    // Get paginated cars
+    const cars = await Car.find(filter)
+      .sort(sortOption)
+      .skip(skip)
+      .limit(itemsPerPage);
+
+    const totalPages = Math.ceil(totalCars / itemsPerPage);
 
     res.status(200).json({
       success: true,
       count: cars.length,
+      total: totalCars,
+      page: currentPage,
+      limit: itemsPerPage,
+      totalPages,
       data: cars
     });
   } catch (error) {

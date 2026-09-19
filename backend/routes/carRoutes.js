@@ -6,10 +6,10 @@ import {
   updateCar,
   deleteCar,
 } from "../controllers/carController.js";
-
+import {validateCar} from "../middleware/carValidation.js";
 const router = express.Router();
 
-router.post("/", createCar);
+router.post("/", validateCar, createCar);
 router.get("/:id", getCarById);
 router.get("/", getCars);
 router.put("/:id", updateCar);
