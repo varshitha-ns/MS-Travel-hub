@@ -7,6 +7,7 @@ import {
   deleteCar,
 } from "../controllers/carController.js";
 import {validateCar} from "../middleware/carValidation.js";
+
 const router = express.Router();
 
 router.post("/", validateCar, createCar);
