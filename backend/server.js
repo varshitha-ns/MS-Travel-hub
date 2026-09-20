@@ -3,7 +3,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import carRoutes from "./routes/carRoutes.js";
-import authRoutes from "./routes/authRoutes.js"
+import authRoutes from "./routes/authRoutes.js";
+import vehicleRoutes from "./routes/vehicleRoutes.js";
 dotenv.config();
 
 connectDB();
@@ -18,6 +19,7 @@ app.use(express.json());
 //Routes
 app.use("/api/cars", carRoutes);
 app.use ("/api/auth", authRoutes);
+app.use("/api/vehicles", vehicleRoutes);
 //HealthCheck
 app.get("/",(req,res)=>{
     res.status(200).json({
