@@ -5,6 +5,7 @@ import connectDB from "./config/db.js";
 import carRoutes from "./routes/carRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import vehicleRoutes from "./routes/vehicleRoutes.js";
+import bookingRoutes from "./routes/bookingRoutes.js";
 dotenv.config();
 
 connectDB();
@@ -20,6 +21,8 @@ app.use(express.json());
 app.use("/api/cars", carRoutes);
 app.use ("/api/auth", authRoutes);
 app.use("/api/vehicles", vehicleRoutes);
+app.use("/api/bookings", bookingRoutes);
+
 //HealthCheck
 app.get("/",(req,res)=>{
     res.status(200).json({

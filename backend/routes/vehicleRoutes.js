@@ -3,8 +3,16 @@ import express from "express";
 import {
   createVehicle,
   getVehicles,
-  getVehicleById
+  getVehicleById,
+  updateVehicle,
+  updateVehicleStatus
 } from "../controllers/vehicleController.js";
+
+import {
+  validateVehicle,
+  validateVehicleUpdate,
+  validateVehicleStatus
+} from "../middleware/vehicleValidation.js";
 
 import {
   protect,
@@ -32,6 +40,22 @@ router.get(
   protect,
   authorize("admin"),
   getVehicleById
+);
+
+router.put(
+  "/:id",
+  protect,
+  authorize("admin"),
+  validateVehicleUpdate,
+  updateVehicle
+);
+
+router.patch(
+  "/:id/status",
+  protect,
+  authorize("admin"),
+  validateVehicleStatus,
+  updateVehicleStatus
 );
 
 export default router;
